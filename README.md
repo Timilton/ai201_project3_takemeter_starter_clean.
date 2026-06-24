@@ -98,6 +98,42 @@ _TBD — 3–5 posts run through the fine-tuned model with predicted label and c
 
 _TBD — the higher-level gap between the label definitions and the model's actual decision boundary (what it overfit to, what it missed)._
 
+### How the evaluation was generated
+
+Confusion matrix (saved as `confusion_matrix.png` and committed to the repo):
+
+```python
+# Confusion matrix
+cm = confusion_matrix(ft_true_ids, ft_pred_ids)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=label_names)
+fig, ax = plt.subplots(figsize=(7, 5))
+disp.plot(ax=ax, cmap="Blues", colorbar=False)
+ax.set_title("Fine-Tuned Model — Confusion Matrix (Test Set)")
+plt.tight_layout()
+plt.savefig("confusion_matrix.png", dpi=150)
+plt.show()
+print("✅ Saved: confusion_matrix.png  →  commit this to your repo and include in README")
+```
+
+Wrong-prediction dump used for the failure analysis (review these, pick 3 to analyze in depth above):
+
+```python
+# Print wrong predictions for your error analysis
+wrong_idx = np.where(ft_pred_ids != ft_true_ids)[0]
+print(f"Wrong predictions: {len(wrong_idx)} / {len(ft_true_ids)}\n")
+
+for i, idx in enumerate(wrong_idx[:15]):
+    text = test_df.iloc[idx]["text"]
+    true_label = ID_TO_LABEL[ft_true_ids[idx]]
+    pred_label = ID_TO_LABEL[ft_pred_ids[idx]]
+    confidence = ft_probs[idx][ft_pred_ids[idx]]
+    print(f"--- #{i+1} ---")
+    print(f"Text:      {text[:200]}{'...' if len(text) > 200 else ''}")
+    print(f"True:      {true_label}")
+    print(f"Predicted: {pred_label}  (confidence: {confidence:.2f})")
+    print()
+```
+
 ---
 
 ## Repository
